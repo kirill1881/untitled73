@@ -27,6 +27,7 @@ public class Bot extends TelegramLongPollingBot {
         return "5768520678:AAGPUZqpKU2quKdd3PWzXpRBy0KVjvEnTQY";
     }
 
+    private static int a = 0;
     @Override
     public void onUpdateReceived(Update update){
         try {
@@ -41,14 +42,36 @@ public class Bot extends TelegramLongPollingBot {
                 sendMessage = new CheckCourse().execute(update);
             }else if (message.equals("Расчет курса")){
                 sendMessage = new CountCourse().execute(update);
-            }else if (message.equals("BYN -> USD")||
-            message.equals("BYN -> EUR")||
-            message.equals("BYN -> RUB")){
-
+            }else if (message.equals("BYN -> USD")
+            /*message.equals("BYN -> EUR")||
+            message.equals("BYN -> RUB")*/){
+                a = 1;
+                sendMessage.setText("Введите сумму");
+                sendMessage.setChatId(update.getMessage().getChatId());
+            }else if(message.equals("BYN -> EUR")){
+                a = 2;
+                sendMessage.setText("Введите сумму");
+                sendMessage.setChatId(update.getMessage().getChatId());
+            }else if ( message.equals("BYN -> RUB")){
+                a = 3;
+                sendMessage.setText("Введите сумму");
+                sendMessage.setChatId(update.getMessage().getChatId());
             }
+            else if (ifNumber(message)){
+                sendMessage = new CountCommand().execute(update, a);
+            }
+            System.out.println(a);
             execute(sendMessage);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    public boolean ifNumber(String str){
+        for (int i = 0; i < str.length(); i++) {
+            if (!Character.isDigit(str.charAt(i))){
+                return false;
+            }
+        }
+        return true;
     }
 }

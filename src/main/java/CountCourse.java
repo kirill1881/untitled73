@@ -20,7 +20,7 @@ public class CountCourse {
 
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(update.getMessage().getChatId());
-        sendMessage.setText("Выберите интересующую конверсию");
+        sendMessage.setText("Выберите интересующую конверсию и введите сумму");
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
         return sendMessage;
     }
