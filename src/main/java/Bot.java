@@ -30,40 +30,23 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update){
         try {
-            KeyboardRow keyboardRow = new KeyboardRow();
-            keyboardRow.add(new KeyboardButton("Доллар США"));
-            keyboardRow.add(new KeyboardButton("Евро"));
-            keyboardRow.add(new KeyboardButton("Российский рубль"));
-
-            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-            replyKeyboardMarkup.setKeyboard(Collections.singletonList(keyboardRow));
-
-            URL url = new URL("https://www.nbrb.by/api/exrates/rates/usd?parammode=2");
-            switch (update.getMessage().getText()){
-                case "Доллар сша":
-                    url = new URL("https://www.nbrb.by/api/exrates/rates/usd?parammode=2");
-                    break;
-                case "Российский рубль":
-                    url = new URL("https://www.nbrb.by/api/exrates/rates/rub?parammode=2");
-                    break;
-                case "Евро":
-                    url = new URL("https://www.nbrb.by/api/exrates/rates/eur?parammode=2");
-                    break;
-            }
-
-            BufferedReader bufferedReader =
-                    new BufferedReader(new InputStreamReader(url.openStream()));
-            String str = bufferedReader.readLine();
-
-            JSONObject jsonObject = new JSONObject(str);
-            String cur = jsonObject.get("Cur_OfficialRate").toString();
-
+            String message = update.getMessage().getText();
             SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(update.getMessage().getChatId());
-            sendMessage.setText(cur);
-            sendMessage.setReplyMarkup(replyKeyboardMarkup);
-            execute(sendMessage);
+            if (message.equals("/start")||message.equals("Главная страница")){
+                sendMessage = new MainCommand().execute(update);
+            }else if (message.equals("Просмотр курса")){
+                sendMessage = new ChooseCurensyCommand().execute(update);
+            }else if (message.equals("Доллар США")||
+            message.equals("Евро")||message.equals("Российский рубль")){
+                sendMessage = new CheckCourse().execute(update);
+            }else if (message.equals("Расчет курса")){
+                sendMessage = new CountCourse().execute(update);
+            }else if (message.equals("BYN -> USD")||
+            message.equals("BYN -> EUR")||
+            message.equals("BYN -> RUB")){
 
+            }
+            execute(sendMessage);
         } catch (Exception e) {
             e.printStackTrace();
         }
